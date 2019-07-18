@@ -215,6 +215,49 @@ const gsl_vector_float* Conversion24bit2Float::next(int frame_no) {
   return vector_;
 }
 
+BufferFeature::BufferFeature(unsigned int framesN_, unsigned sz, const String& nm):
+  VectorFloatFeatureStream(sz, nm), framesN_(framesN_), frames_(framesN_)
+{
+  for (int i = 0; i < framesN_; i++)
+    frames_[i] = gsl_vector_float_alloc(size());
+}
+
+BufferFeature::~BufferFeature()
+{
+  for (int i = 0; i < framesN_; i++)
+    gsl_vector_float_free(frames_[i]);
+}
+
+const gsl_vector_float* BufferFeature::next(int frame_no)
+{
+  if (frame_no >= 0 && frame_no <= frame_no_)
+    return frames_[frame_no];
+
+  increment_();
+
+  if (frame_no_ >= framesN_) /* if (frame_no >= framesN_) */
+    throw jiterator_error("end of samples!");
+
+  return frames_[frame_no_];
+}
+
+void BufferFeature::set(int frame_no, int vector_idx, float val)
+{
+  if (frame_no < 0 || frame_no >= framesN_)
+    throw jindex_error("Invalid frame number: 0 <= %d < %d", frame_no, framesN_);
+
+  if (vector_idx < 0 || vector_idx >= size())
+    throw jindex_error("Invalid vector index: 0 <= %d < %d", vector_idx, size());
+  
+  
+  // for (int i = 0; i < framesN_; i++)
+  //   for (int j = 0; j < size(); j++)
+  gsl_vector_float_set(frames_[frame_no], vector_idx, val);
+
+  // if (sz != int(frames_[0]->size))
+  //   throw jdimension_error("Feature dimensions (%d vs. %d) do not match.\n",
+  //        sz, frames_[0]->size);
+}
 
 // ----- methods for class `SampleFeature' -----
 //

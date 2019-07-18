@@ -199,6 +199,38 @@ class Conversion24bit2FloatPtr : public VectorFloatFeatureStreamPtr {
   Conversion24bit2FloatPtr* operator->();
 };
 
+
+// ----- definition for class `BufferFeature' -----
+//
+%ignore BufferFeature;
+class BufferFeature : public VectorFloatFeatureStream {
+  %feature("kwargs") set;
+  %feature("kwargs") reset;
+  %feature("kwargs") next;
+  %feature("kwargs") frame_no;
+public:
+  BufferFeature(unsigned int framesN_, unsigned sz = 1, const String& nm = "Buffer");
+  virtual ~BufferFeature();
+  virtual const gsl_vector_float* next(int frame_no = -5);
+  void set(int frame_no, int vector_idx, float val);
+};
+
+class BufferFeaturePtr : public VectorFloatFeatureStreamPtr {
+  %feature("kwargs") BufferFeaturePtr;
+ public:
+  %extend {
+    BufferFeaturePtr(unsigned int framesN_, unsigned sz = 1, const String& nm = "Buffer") {
+      return new BufferFeaturePtr(new BufferFeature(framesN_, sz, nm));
+    }
+
+    BufferFeaturePtr __iter__() {
+      (*self)->reset();  return *self;
+    }
+  }
+
+  BufferFeature* operator->();
+};
+
 // ----- definition for class `SampleFeature' -----
 //
 %ignore SampleFeature;

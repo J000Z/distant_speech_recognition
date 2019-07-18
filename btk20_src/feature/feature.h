@@ -140,6 +140,19 @@ class Conversion24bit2Float : public VectorFloatFeatureStream {
 
 typedef Inherit<Conversion24bit2Float, VectorFloatFeatureStreamPtr> Conversion24bit2FloatPtr;
 
+class BufferFeature;
+typedef Inherit<BufferFeature, VectorFloatFeatureStreamPtr> BufferFeaturePtr;
+class BufferFeature: public VectorFloatFeatureStream {
+  typedef vector<gsl_vector_float*> _StorageVector;
+  public:
+    BufferFeature(unsigned int framesN_, unsigned sz = 1, const String& nm = "Buffer");
+    virtual ~BufferFeature();
+    virtual const gsl_vector_float* next(int frame_no = -5);
+    void set(int frame_no, int vector_idx, float val);
+  private:
+    _StorageVector  frames_;
+    unsigned int    framesN_;
+};
 
 /**
 * \defgroup SampleFeature Sample Feature
