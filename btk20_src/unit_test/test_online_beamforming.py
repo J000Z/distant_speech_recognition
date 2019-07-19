@@ -81,6 +81,20 @@ def online_beamforming(h_fb, g_fb, D, M, m, r, input_audio_paths, out_path, ap_c
         # Instantiation of an audio file reader
         sample_feat = SampleFeaturePtr(block_len = D, shift_len = D, pad_zeros = True)
         sample_feat.read(input_audio_path, samplerate)
+        # convert sample feature to buffer feature
+        frames = [f.tolist() for f in sample_feat]
+        buffer_feat = BufferFeaturePtr(len(frames), sample_feat.size())
+        for frame_no, frame in enumerate(frames):
+            for frame_idx, val in enumerate(frame):
+                buffer_feat.set(frame_no, frame_idx, val)
+
+        sample_feat = buffer_feat
+        # i = 0
+        # for x, y in zip(frames, list(buffer_feat)):
+        #     i += 1
+        #     if not numpy.array_equal(x, y):
+        #         print numpy.equal(x, y)
+
         # Instantiation of over-sampled DFT analysis filter bank
         afb = OverSampledDFTAnalysisBankPtr(sample_feat, prototype = h_fb, M = M, m = m, r = r, delay_compensation_type=2)
         # Keep the instances

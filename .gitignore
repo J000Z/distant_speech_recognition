@@ -31,7 +31,6 @@
 *.out
 *.app
 
-.vscode
 btk20_src/build
 btk20_src/unit_test/out
 
