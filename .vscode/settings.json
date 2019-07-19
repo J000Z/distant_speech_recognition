@@ -1,0 +1,4 @@
+{
+    "python.pythonPath": "/home/ubuntu/miniconda3/envs/btk/bin/python",
+    "python.envFile": "${workspaceFolder}/.vscode/.env"
+}
